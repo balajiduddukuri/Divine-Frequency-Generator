@@ -1,12 +1,14 @@
 
 import React, { useEffect, useRef } from 'react';
+import { VisualizerSettings } from '../types';
 
 interface VisualizerProps {
   isPlaying: boolean;
   color: string;
+  settings: VisualizerSettings;
 }
 
-const Visualizer: React.FC<VisualizerProps> = ({ isPlaying, color }) => {
+const Visualizer: React.FC<VisualizerProps> = ({ isPlaying, color, settings }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -26,13 +28,14 @@ const Visualizer: React.FC<VisualizerProps> = ({ isPlaying, color }) => {
     window.addEventListener('resize', resize);
 
     const createParticles = () => {
-      if (particles.length < 50 && isPlaying) {
+      const maxParticles = 20 * settings.density;
+      if (particles.length < maxParticles && isPlaying) {
         particles.push({
           x: canvas.width / 2,
           y: canvas.height / 2,
-          r: 10 + Math.random() * 20,
-          a: 1,
-          s: 0.5 + Math.random() * 2
+          r: (5 + Math.random() * 15) * settings.particleSize,
+          a: settings.opacity,
+          s: (0.5 + Math.random() * 2) * settings.growthSpeed
         });
       }
     };
@@ -51,7 +54,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ isPlaying, color }) => {
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.strokeStyle = color;
         ctx.globalAlpha = p.a;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.5;
         ctx.stroke();
         
         p.r += p.s * 2;
@@ -59,9 +62,16 @@ const Visualizer: React.FC<VisualizerProps> = ({ isPlaying, color }) => {
       });
 
       // Central glow
-      const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, 150);
-      grad.addColorStop(0, color.replace(')', ', 0.3)').replace('rgb', 'rgba'));
+      const grad = ctx.createRadialGradient(
+        canvas.width/2, canvas.height/2, 0, 
+        canvas.width/2, canvas.height/2, 150 * settings.particleSize
+      );
+      
+      // Convert hex to rgba for better glow control
+      const glowColor = color.startsWith('#') ? color : '#f59e0b';
+      grad.addColorStop(0, `${glowColor}44`);
       grad.addColorStop(1, 'transparent');
+      
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -74,9 +84,9 @@ const Visualizer: React.FC<VisualizerProps> = ({ isPlaying, color }) => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resize);
     };
-  }, [isPlaying, color]);
+  }, [isPlaying, color, settings]);
 
-  return <canvas ref={canvasRef} className="w-full h-64 md:h-80 rounded-3xl" />;
+  return <canvas ref={canvasRef} className="w-full h-64 md:h-80 rounded-[3rem] transition-all duration-700" />;
 };
 
 export default Visualizer;
