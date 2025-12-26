@@ -1,0 +1,7 @@
+{
+  "name": "Divine Frequency Generator",
+  "description": "High-vibration frequency tuner for meditation and healing. Features Solfeggio tones, binaural beats, and chakra resonance.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
