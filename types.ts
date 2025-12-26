@@ -1,7 +1,7 @@
 
 export type Waveform = 'sine' | 'square' | 'sawtooth' | 'triangle';
 
-export type ThemeId = 'classic' | 'neon' | 'zen' | 'celestial' | 'earth';
+export type ThemeId = 'classic' | 'neon' | 'zen' | 'celestial' | 'earth' | 'ruby' | 'light' | 'dark';
 
 export interface Theme {
   id: ThemeId;
@@ -34,24 +34,6 @@ export interface Frequency {
   info: string;
   category: 'solfeggio' | 'chakra' | 'universal';
   color: string;
-}
-
-export interface ActiveTone {
-  freqId: string;
-  oscL: OscillatorNode;
-  oscR: OscillatorNode;
-  gain: GainNode;
-  pannerL: StereoPannerNode;
-  pannerR: StereoPannerNode;
-}
-
-export interface AppState {
-  isPlaying: boolean;
-  masterVolume: number;
-  waveform: Waveform;
-  activeFrequencies: string[];
-  mode: 'single' | 'mix' | 'random';
-  timer: number | null; // minutes
 }
 
 export interface ReflectionResponse {
